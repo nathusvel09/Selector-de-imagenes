@@ -4,17 +4,17 @@ import './App.css';
 // Lista de palabras con sus categorías
 const words = [
   { word: 'monstruo', category: 'animal' },
-  { word: 'dragón', category: 'animal' },
+  { word: 'dragon', category: 'animal' },
   { word: 'fantasma', category: 'animal' },
   { word: 'vampiro', category: 'animal' },
-  { word: 'tiburón', category: 'animal' },
+  { word: 'tiburon', category: 'animal' },
   { word: 'zombie', category: 'animal' },
   { word: 'demonio', category: 'animal' },
   { word: 'espectro', category: 'animal' },
   { word: 'silla', category: 'objeto' },
-  { word: 'televisión', category: 'objeto' },
+  { word: 'television', category: 'objeto' },
   { word: 'computadora', category: 'objeto' },
-  { word: 'lámpara', category: 'objeto' },
+  { word: 'lampara', category: 'objeto' },
   { word: 'pelota', category: 'objeto' },
   { word: 'reloj', category: 'objeto' },
   { word: 'mesa', category: 'objeto' },
@@ -60,12 +60,12 @@ const App = () => {
     if (gameOver || incorrectGuesses.includes(letter) || correctGuesses.includes(letter)) {
       return;
     }
-
+  
     if (word.includes(letter)) {
       const newDisplayedWord = displayedWord.split(' ').map((char, index) => {
         return word[index] === letter ? letter : char;
       }).join(' ');
-
+  
       setDisplayedWord(newDisplayedWord);
       setCorrectGuesses([...correctGuesses, letter]);
       updateQTable(letter, true);
@@ -74,13 +74,15 @@ const App = () => {
       setMonsterParts(monsterParts + 1);
       updateQTable(letter, false);
     }
-
-    if (!displayedWord.includes('_') && monsterParts < 6) {
-      setGameOver(true);  // El jugador gana
-    } else if (monsterParts === 6) {
+  
+    // Verifica si se alcanzaron los 6 errores, lo que significa que el jugador ha perdido
+    if (monsterParts + 1 === 6) {
       setGameOver(true);  // El jugador pierde
+    } else if (!displayedWord.includes('_')) {
+      setGameOver(true);  // El jugador gana
     }
   };
+  
 
   const updateQTable = (letter, isCorrect) => {
     const newQTable = { ...qTable };  // Copia la tabla Q actual
@@ -134,7 +136,7 @@ const App = () => {
 
   return (
     <div className="game-container">
-      <h1>Juego de Ahorcado: Monstruo</h1>
+      <h1>Juego de Ahorcando al Monstruo</h1>
       <p>¡Intenta adivinar la palabra!</p>
       <h2>{displayedWord}</h2>
       {!gameOver ? (
