@@ -1,88 +1,120 @@
-/* Diseño general */
+/* Fondo del juego */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
   margin: 0;
-  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background-image: url('https://www.marketingdirecto.com/wp-content/uploads/2024/08/Industria-videojuego.jpg'); /* Reemplaza con tu imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
 }
 
+/* Contenedor principal */
 .game-container {
-  max-width: 800px;
-  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.8); /* Fondo semitransparente */
   padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  width: 350px;
   text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.6);
 }
 
+/* Títulos */
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 h2 {
-  font-size: 2rem;
-  margin-top: 20px;
-}
-
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  border: none;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
   font-size: 1.2rem;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  margin-bottom: 10px;
 }
 
-button:hover {
-  background-color: #45a049;
+/* Texto */
+p {
+  font-size: 0.9rem;
+  margin: 5px 0;
 }
 
-button:disabled {
-  background-color: #ccc;
-}
-
+/* Botones de letras */
 .letter-buttons {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(6, 1fr); /* Ajusta la cantidad de columnas */
+  gap: 5px;
+  margin-top: 15px;
 }
 
 .letter-button {
-  padding: 12px;
-  font-size: 1.2rem;
+  background: #2c3e50; /* Color inicial (no usado) */
+  color: #fff;
+  border: none;
+  padding: 5px;
+  font-size: 0.8rem;
   border-radius: 5px;
-  background-color: #2196F3;
-  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.letter-button:hover {
-  background-color: #1976D2;
+/* Cuando la letra es correcta */
+.letter-button.correct {
+  background: #27ae60; /* Verde para letras correctas */
 }
 
+/* Cuando la letra es incorrecta */
+.letter-button.incorrect {
+  background: #c0392b; /* Rojo para letras incorrectas */
+}
+
+/* Hover para botones no usados */
+.letter-button:hover:not(:disabled):not(.correct):not(.incorrect) {
+  background: #34495e;
+}
+
+/* Botones deshabilitados */
+.letter-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Botón de pista */
 .hint-button {
-  background-color: #FF9800;
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 10px;
 }
 
 .hint-button:hover {
-  background-color: #FB8C00;
+  background: #4682b4;
 }
 
-.monster-drawing {
-  font-size: 2rem;
-  margin-top: 20px;
-}
-
+/* Botones de acción */
 .action-button {
-  background-color: #f44336;
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin: 5px;
 }
 
 .action-button:hover {
-  background-color: #d32f2f;
+  background: #388e3c;
+}
+
+/* Monstruo */
+.monster-drawing div {
+  font-size: 1.5rem;
+  margin: 5px;
 }

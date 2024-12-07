@@ -61,62 +61,85 @@ const App = () => {
       return;
     }
   
+    const button = document.querySelector(`.letter-button[data-letter="${letter}"]`);
+  
     if (word.includes(letter)) {
+      // La letra es correcta
       const newDisplayedWord = displayedWord.split(' ').map((char, index) => {
         return word[index] === letter ? letter : char;
       }).join(' ');
   
       setDisplayedWord(newDisplayedWord);
       setCorrectGuesses([...correctGuesses, letter]);
+      button.classList.add('correct'); // Agrega la clase "correct"
       updateQTable(letter, true);
     } else {
+      // La letra es incorrecta
       setIncorrectGuesses([...incorrectGuesses, letter]);
       setMonsterParts(monsterParts + 1);
+      button.classList.add('incorrect'); // Agrega la clase "incorrect"
       updateQTable(letter, false);
     }
   
-    // Verifica si se alcanzaron los 6 errores, lo que significa que el jugador ha perdido
+    // Verificar si se ha perdido o ganado el juego
     if (monsterParts + 1 === 6) {
-      setGameOver(true);  // El jugador pierde
+      setGameOver(true);
     } else if (!displayedWord.includes('_')) {
-      setGameOver(true);  // El jugador gana
+      setGameOver(true);
     }
-  };
-  
-
-  const updateQTable = (letter, isCorrect) => {
-    const newQTable = { ...qTable };  // Copia la tabla Q actual
-  
-    if (!newQTable[letter]) {
-      newQTable[letter] = 0; // Inicializa el valor de Q para esa letra si no existe
-    }
-  
-    const reward = isCorrect ? 1 : -1;  // +1 si es correcta, -1 si es incorrecta
-    newQTable[letter] += reward;  // Actualiza el valor Q para esa letra
-  
-    setQTable(newQTable);  // Actualiza el estado con la nueva tabla Q
-    localStorage.setItem('qTable', JSON.stringify(newQTable));  // Guardar tabla Q en localStorage
   };
   
 
   const getAISuggestion = () => {
     const remainingLetters = word.split('').filter((letter) => !correctGuesses.includes(letter));
     if (remainingLetters.length === 0) {
-      alert('¡Ya has adivinado todas las letras correctamente!');
-      return;
+        alert('¡Ya has adivinado todas las letras correctamente!');
+        return;
     }
-    const letterToSuggest = remainingLetters.reduce((bestLetter, currentLetter) => {
-      const currentValue = qTable[currentLetter] || 0;
-      const bestValue = qTable[bestLetter] || 0;
-      return currentValue > bestValue ? currentLetter : bestLetter;
-    });
-    alert(`La IA sugiere adivinar la letra: ${letterToSuggest}`);
-  };
 
-  const endGame = () => {
+    // Predicción inicial aleatoria para fomentar el aprendizaje
+    const isRandom = Math.random() < 0.3; // 30% de predicciones aleatorias
+    let letterToSuggest;
+
+    if (isRandom) {
+        letterToSuggest = remainingLetters[Math.floor(Math.random() * remainingLetters.length)];
+    } else {
+        // Sugerencia basada en valores de Q-Table
+        letterToSuggest = remainingLetters.reduce((bestLetter, currentLetter) => {
+            const currentValue = qTable[currentLetter] || 0;
+            const bestValue = qTable[bestLetter] || 0;
+            return currentValue > bestValue ? currentLetter : bestLetter;
+        });
+    }
+
+    alert(`La IA sugiere adivinar la letra: ${letterToSuggest}`);
+    return letterToSuggest; // Se sugiere una letra
+};
+
+const updateQTable = (letter, isCorrect) => {
+  const newQTable = { ...qTable }; // Copia la tabla Q actual
+
+  if (!newQTable[letter]) {
+    newQTable[letter] = 0; // Asegura que la letra tenga un valor inicial de 0
+  }
+
+  const reward = isCorrect ? 1 : -1; // Recompensa (+1) o castigo (-1)
+  const learningRate = 0.1; // Tasa de aprendizaje
+  const discountFactor = 0.9; // Factor de descuento para futuros pasos
+
+  newQTable[letter] = newQTable[letter] + learningRate * (reward + discountFactor * (qTable[letter] || 0) - newQTable[letter]);
+
+  setQTable(newQTable); // Actualiza el estado con la nueva tabla Q
+  localStorage.setItem('qTable', JSON.stringify(newQTable)); // Guardar tabla Q en localStorage
+};
+
+
+const endGame = () => {
     setGameOver(true);
-    alert('¡Has terminado el juego!');
-  };
+    const errorRate = incorrectGuesses.length / (incorrectGuesses.length + correctGuesses.length);
+    alert(`¡Has terminado el juego! Tasa de error de la IA: ${(errorRate * 100).toFixed(2)}%`);
+};
+
 
   const drawMonster = () => {
     const parts = [
@@ -133,7 +156,6 @@ const App = () => {
   useEffect(() => {
     startGame();
   }, []);
-
   return (
     <div className="game-container">
       <h1>Juego de Ahorcando al Monstruo</h1>
@@ -147,7 +169,13 @@ const App = () => {
           <button onClick={() => { setShowHint(true); getAISuggestion(); }} className="hint-button">Mostrar Pista</button>
           <div className="letter-buttons">
             {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'].map((letter) => (
-              <button key={letter} onClick={() => handleGuess(letter)} disabled={gameOver} className="letter-button">
+              <button
+                key={letter}
+                data-letter={letter} // Identificador único para cada botón
+                onClick={() => handleGuess(letter)}
+                disabled={gameOver || incorrectGuesses.includes(letter) || correctGuesses.includes(letter)}
+                className="letter-button"
+              >
                 {letter}
               </button>
             ))}
